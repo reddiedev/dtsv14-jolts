@@ -10,7 +10,7 @@ const command: SlashCommand = {
         const websocketPing = interaction.client.ws.ping;
 
         await interaction.editReply({
-            content: `Pong!\n**Client: **\`${clientPing}\` ms\n**Websockeet: **\`${websocketPing}\` ms`
+            content: `Pong!\n**Client: **\`${clientPing}\` ms\n**Websocket: **\`${websocketPing}\` ms`
         });
     }
 };
