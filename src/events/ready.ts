@@ -1,6 +1,8 @@
 import { Client } from "discord.js";
 import { BotEvent } from "../types";
 import setActivity from "../functions/setActivity";
+import cron from "node-cron";
+import burn from "../functions/burn";
 
 const event: BotEvent = {
     name: "ready",
@@ -12,6 +14,18 @@ const event: BotEvent = {
         );
 
         await setActivity(client);
+
+        const prisma = client.prisma;
+
+        cron.schedule(
+            "0 8 * * 1",
+            async () => {
+                const setting = await prisma.setting.findUnique({ where: { id: 1 } });
+                if (!setting) return;
+                await burn(setting.burn, false, prisma);
+            },
+            { timezone: "Etc/UTC" }
+        );
     }
 };
 
