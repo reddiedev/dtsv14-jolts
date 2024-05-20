@@ -11,7 +11,11 @@ model Setting {
   id Int @id @default(1)
 
   activityType ActivityTextType @default(Playing)
-  activityName String           @default("Discord")
+  activityName String           @default("Socket Mock Up")
+
+  joltsEmoji  String @default(":zap:")
+  burn        Float  @default(0.1)
+  staffRoleID String @default("1242154418435260446")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,19 +29,41 @@ enum ActivityTextType {
   Competing
 }
 
-model Guild {
-  guildID String @id
+model Player {
+  discordID  String @id
+  discordTag String
+
+  coins Float @default(0)
+
+  autoroles PlayerAutorole[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Player {
-  discordID  String @id
-  discordTag String
+model Autorole {
+  roleID String @id
 
-  points Int @default(0)
+  amount     Float
+  multiplier Float
+
+  players PlayerAutorole[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PlayerAutorole {
+  id String @id @default(cuid())
+
+  player    Player @relation(fields: [discordID], references: [discordID])
+  discordID String
+
+  autorole Autorole @relation(fields: [roleID], references: [roleID])
+  roleID   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([discordID, roleID])
 }

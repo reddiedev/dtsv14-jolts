@@ -1,34 +1,27 @@
-import { EmbedBuilder, GuildMember, SlashCommandBuilder, SlashCommandSubcommandBuilder, userMention } from "discord.js";
+import { EmbedBuilder, GuildMember, SlashCommandBuilder, userMention } from "discord.js";
 import { SlashCommand } from "../types";
 import { chunk } from "lodash";
 import paginateLeaderboard from "../utils/paginateLeaderboard";
-import { Player } from "@prisma/client";
 
 const command: SlashCommand = {
-    command: new SlashCommandBuilder()
-        .setName("leaderboard")
-        .setDescription("view player leaderboard")
-        .addSubcommand(
-            new SlashCommandSubcommandBuilder()
-                .setName(`points`)
-                .setDescription(`server leaderboard according to points`)
-        )
-        .addSubcommand(
-            new SlashCommandSubcommandBuilder()
-                .setName(`invites`)
-                .setDescription(`server leaderboard according to invites`)
-        ),
+    command: new SlashCommandBuilder().setName("leaderboard").setDescription("view player leaderboard!"),
     execute: async (interaction) => {
         await interaction.deferReply();
 
-        const subcommand = interaction.options.getSubcommand(true);
+        const id = 1;
+        const setting = await interaction.client.prisma.setting.upsert({
+            where: {
+                id
+            },
+            create: {
+                id
+            },
+            update: {}
+        });
 
-        let users: Player[] = [];
-        if (subcommand == "points") {
-            users = await interaction.client.prisma.player.findMany({
-                orderBy: { points: "desc" }
-            });
-        }
+        const users = await interaction.client.prisma.player.findMany({
+            orderBy: { coins: "desc" }
+        });
 
         const players = users.map((u, index) => {
             return {
@@ -45,13 +38,15 @@ const command: SlashCommand = {
             let text = ``;
 
             for (const player of playersChunk) {
-                text += `\n **${player.rank}** ${userMention(player.discordID)} \`${player.points}\``;
+                text += `\n **${player.rank}** ${userMention(player.discordID)} \`${player.coins}\` ${
+                    setting.joltsEmoji
+                }`;
             }
 
             const embed = new EmbedBuilder()
                 .setColor("Random")
                 .setDescription(text)
-                .setTitle(`🏆 Player Leaderboard`)
+                .setTitle(`🏆 Player Jolts Leaderboard`)
                 .setAuthor({ name: interaction.guild!.name, iconURL: interaction.guild!.iconURL() as string })
                 .setFooter({
                     text: `requested by @${member.displayName}`,
