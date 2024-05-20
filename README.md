@@ -37,7 +37,7 @@ pnpm add -g pm2
 
 1. Clone this repo on your desired working directory
 ```bash
-git clone https://github.com/tojokely/sauceBot.git
+git clone https://github.com/reddiedev/dtsv14-jolts.git
 ```
 2. Update the `src/config.ts` file and `.env` file with your project variables and configurations
 3. Install project dependencies `pnpm install`
