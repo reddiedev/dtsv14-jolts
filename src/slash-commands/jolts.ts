@@ -12,11 +12,11 @@ import processAutoroles from "../functions/processAutoroles";
 const command: SlashCommand = {
     command: new SlashCommandBuilder()
         .setName("jolts")
-        .setDescription("add or remove jolts to users | admin-only")
+        .setDescription("add or remove jolts to users | staff-only")
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName(`add`)
-                .setDescription(`add jolts to a player`)
+                .setDescription(`add jolts to a player | staff-only`)
                 .addUserOption((option) => option.setName("target").setDescription("the target user").setRequired(true))
                 .addNumberOption((option) =>
                     option
@@ -29,7 +29,7 @@ const command: SlashCommand = {
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName(`remove`)
-                .setDescription(`remove jolts from a player`)
+                .setDescription(`remove jolts from a player | staff-only`)
                 .addUserOption((option) => option.setName("target").setDescription("the target user").setRequired(true))
                 .addNumberOption((option) =>
                     option
