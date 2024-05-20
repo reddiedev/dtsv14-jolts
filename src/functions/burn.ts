@@ -12,7 +12,7 @@ export default async function burn(burnRate: number, ignoreAutoroles: boolean = 
         const autoroles = player.autoroles.map((i) => i.autorole);
         const multiplier = await findMultiplier(autoroles);
         const rate = ignoreAutoroles ? burnRate : (1 - multiplier) * burnRate;
-        const newCoins = player.coins * rate;
+        const newCoins = player.coins * (1 - rate);
         const promise = new Promise<void>(async (resolve) => {
             await prisma.player.update({ where: { discordID: player.discordID }, data: { coins: newCoins } });
             resolve();
