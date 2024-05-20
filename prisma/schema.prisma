@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Setting {
+  id Int @id @default(1)
+
+  activityType ActivityTextType @default(Playing)
+  activityName String           @default("Discord")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ActivityTextType {
+  Playing
+  Streaming
+  Listening
+  Watching
+  Competing
+}
+
+model Guild {
+  guildID String @id
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Player {
+  discordID  String @id
+  discordTag String
+
+  points Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
