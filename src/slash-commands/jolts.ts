@@ -118,8 +118,6 @@ const command: SlashCommand = {
             content
         });
 
-        const targetMember = await interaction.guild!.members.fetch(discordID);
-        await processAutoroles(targetMember, prisma);
     }
 };
 
