@@ -64,3 +64,24 @@ pnpm run dev
 pnpm run serve
 pnpm run restart
 ```
+
+## Docker Deployment
+0. Install [Docker](https://docs.docker.com/desktop/) on your Local Machine
+1. Deploy PostgreSQL Instance using Docker
+
+```bash
+docker network create jolts
+docker run --name jolts-db --network=jolts -e POSTGRES_PASSWORD=<POSTGRES_PASSWORD> -d -p 5432:5432 postgres // update <POSTGRES_PASSWORD>
+docker network inspect jolts // get ip address of container <POSTGRES_IP>
+```
+
+2. Take note of the new `DATABASE_URL` based on the ip address of the container and append it to `.env`
+`DATABASE_URL=postgresql://postgres:<POSTGRES_PASSWORD>@<POSTGRES_IP>:5432/main`
+
+3. Test the Database connection by running the app from console connected to the 
+
+4. Deploy App via Docker 
+```bash
+docker build . --tag bungeenetwork/jolts
+docker run -d --name jolts --network jolts --env-file ./.env bungeenetwork/jolts
+```
