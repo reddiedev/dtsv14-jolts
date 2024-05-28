@@ -44,6 +44,7 @@ declare global {
             GUILD_ID: string;
             OWNER_ID: string;
             DEVELOPER_ID: string;
+            UNB_TOKEN: string;
         }
     }
 }
