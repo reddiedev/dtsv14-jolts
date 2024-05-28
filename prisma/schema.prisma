@@ -15,7 +15,7 @@ model Setting {
 
   joltsEmoji  String @default(":zap:")
   burn        Float  @default(0.1)
-  staffRoleID String @default("1242154418435260446")
+  staffRoleID String @default("895147021177061446")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
