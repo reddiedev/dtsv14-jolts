@@ -21,32 +21,47 @@ const command: SlashCommand = {
 
         const guild = interaction.guild!;
         const members = await guild.members.fetch();
+
         await interaction.editReply({
             content: `importing ${members.size} members from unbelievaboat into the database`
         });
 
-        const users = (await client.getGuildLeaderboard(process.env.GUILD_ID, { sort: "total" })) as User[];
-        const chunks = chunk(users, 10);
-        let ctr = 0;
-        for (const chunk of chunks) {
-            ctr += 1;
-            console.log(`processing ${ctr}/${chunks.length}`);
-            const promises = [];
-            for (const user of chunk) {
-                const discordID = user.user_id;
-                const coins = user.total;
+        const initLeaderboard = (await client.getGuildLeaderboard(process.env.GUILD_ID, {
+            sort: "total",
+            limit: 1000,
+            page: 1
+        })) as { users: User[]; totalPages: number };
+        const totalPages = initLeaderboard.totalPages;
 
-                promises.push(
-                    new Promise<void>(async (resolve) => {
-                        await prisma.player.update({
-                            where: { discordID },
-                            data: { coins }
-                        });
-                        resolve();
-                    })
-                );
+        for (let page = 1; page <= totalPages; page++) {
+            console.log(`processing page ${page}/${totalPages}`);
+            const leaderboard = (await client.getGuildLeaderboard(process.env.GUILD_ID, {
+                sort: "total",
+                limit: 1000,
+                page
+            })) as { users: User[]; totalPages: number };
+            const chunks = chunk(leaderboard.users, 10);
+            let ctr = 0;
+            for (const chunk of chunks) {
+                ctr += 1;
+                console.log(`processing chunk: ${ctr}/${chunks.length}`);
+                const promises = [];
+                for (const user of chunk) {
+                    const discordID = user.user_id;
+                    const coins = user.total;
+
+                    promises.push(
+                        new Promise<void>(async (resolve) => {
+                            await prisma.player.updateMany({
+                                where: { discordID },
+                                data: { coins }
+                            });
+                            resolve();
+                        })
+                    );
+                }
+                await Promise.allSettled(promises);
             }
-            await Promise.allSettled(promises);
         }
 
         await interaction.editReply({
