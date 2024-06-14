@@ -20,7 +20,8 @@ const command: SlashCommand = {
         });
 
         const users = await interaction.client.prisma.player.findMany({
-            orderBy: { coins: "desc" }
+            orderBy: { coins: "desc" },
+            take: 100
         });
 
         const players = users.map((u, index) => {
