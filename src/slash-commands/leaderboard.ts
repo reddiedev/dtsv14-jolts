@@ -1,4 +1,4 @@
-import { EmbedBuilder, GuildMember, SlashCommandBuilder, userMention } from "discord.js";
+import { EmbedBuilder, GuildMember, inlineCode, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../types";
 import { chunk } from "lodash";
 import paginateLeaderboard from "../utils/paginateLeaderboard";
@@ -35,11 +35,13 @@ const command: SlashCommand = {
 
         const embeds = [];
         const member = interaction.member as GuildMember;
+        let page = 0;
         for (const playersChunk of playersChunks) {
+            page += 1;
             let text = ``;
 
             for (const player of playersChunk) {
-                text += `\n **${player.rank}** ${userMention(player.discordID)} \`${player.coins}\` ${
+                text += `\n **${player.rank}** ${inlineCode(player.discordTag)} \`${player.coins}\` ${
                     setting.joltsEmoji
                 }`;
             }
@@ -50,7 +52,7 @@ const command: SlashCommand = {
                 .setTitle(`🏆 Player Jolts Leaderboard`)
                 .setAuthor({ name: interaction.guild!.name, iconURL: interaction.guild!.iconURL() as string })
                 .setFooter({
-                    text: `requested by @${member.displayName}`,
+                    text: `Page ${page}/${playersChunks.length} | requested by @${member.displayName}`,
                     iconURL: member.displayAvatarURL()
                 });
 
