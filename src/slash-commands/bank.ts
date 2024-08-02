@@ -3,6 +3,7 @@ import { SlashCommand } from "../types";
 import getPercent from "../utils/getPercent";
 import log from "../utils/log";
 import burn from "../functions/burn";
+import processRolesCheck from "../functions/processRolesCheck";
 
 const command: SlashCommand = {
     command: new SlashCommandBuilder()
@@ -37,6 +38,11 @@ const command: SlashCommand = {
                         .setRequired(true)
                 )
                 .setDescription(`execute manual burn | staff-only`)
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName(`manual_roles`)
+                .setDescription(`execute manual roles check | staff-only`)
         ),
     execute: async (interaction) => {
         await interaction.deferReply();
@@ -84,6 +90,11 @@ const command: SlashCommand = {
             await log({ title: "Manual Burn Initiated", color: "DarkGreen", content });
 
             await burn(rate, ignoreAutoroles, prisma);
+        } else if (subcommand == "manual_roles") {
+            await processRolesCheck(interaction.guild!, prisma);
+            const content = `${userMention(interaction.user.id)} initiated a manual roles check`;
+            await interaction.editReply({ content });
+            await log({ title: "Manual Roles Check", color: "DarkRed", content });
         }
     }
 };
