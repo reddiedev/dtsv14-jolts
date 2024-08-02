@@ -16,9 +16,9 @@
 		"pm2-start": "pm2 start build/index.js --name discord-bot --log logs.txt --time",
 		"lint": "eslint --ext .js,.ts .",
 		"postinstall": "prisma generate",
-		"db:generate": "prisma generate",
-		"db:studio": "prisma studio",
-		"db:push": "prisma db push",
+		"generate": "prisma generate",
+		"studio": "prisma studio",
+		"push": "prisma db push",
 		"seed": "ts-node prisma/seed.ts"
 	},
 	"devDependencies": {

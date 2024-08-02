@@ -1,9 +1,10 @@
-import { Client } from "discord.js";
+import { Client, time } from "discord.js";
 import { BotEvent } from "../types";
 import setActivity from "../functions/setActivity";
 import cron from "node-cron";
 import burn from "../functions/burn";
 import processRolesCheck from "../functions/processRolesCheck";
+import log from "../utils/log";
 
 const event: BotEvent = {
     name: "ready",
@@ -17,14 +18,27 @@ const event: BotEvent = {
         await setActivity(client);
 
         const prisma = client.prisma;
-        const guild = await client.guilds.fetch(process.env.GUILD_ID)
+        const guild = await client.guilds.fetch(process.env.GUILD_ID);
 
         cron.schedule(
             "0 8 * * 1 */2",
             async () => {
                 const setting = await prisma.setting.findUnique({ where: { id: 1 } });
                 if (!setting) return;
+                const playerCount = await prisma.player.count();
+                await log({
+                    title: "Auto Burn Started",
+                    color: "Green",
+                    content: `Started ${setting?.joltsEmoji} jolts burning for ${playerCount} users ${time(new Date())}`
+                });
                 await burn(setting.burn, false, prisma);
+                await log({
+                    title: "Auto Burn Finished",
+                    color: "Red",
+                    content: `Finished ${setting?.joltsEmoji} jolts burning for ${playerCount} users ${time(
+                        new Date()
+                    )}`
+                });
             },
             { timezone: "Etc/UTC" }
         );
@@ -32,7 +46,7 @@ const event: BotEvent = {
         cron.schedule(
             "0 8 * * *",
             async () => {
-                await processRolesCheck(guild,prisma)
+                await processRolesCheck(guild, prisma);
             },
             { timezone: "Etc/UTC" }
         );

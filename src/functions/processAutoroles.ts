@@ -3,6 +3,7 @@ import { GuildMember, roleMention, userMention } from "discord.js";
 import log from "../utils/log";
 
 export default async function processAutoroles(member: GuildMember, prisma: PrismaClient) {
+    console.info(`Checking autoroles for ${member.displayName}`);
     const roles = member.roles.cache;
     const autoroles = await prisma.autorole.findMany({ orderBy: { amount: "asc" } });
     const player = await prisma.player.findUnique({
@@ -37,13 +38,21 @@ export default async function processAutoroles(member: GuildMember, prisma: Pris
         if (roles.has(autorole.roleID)) {
             // check if user is still eligible
             if (!isEligible) {
-                await log({title:"Autorole Lost",color:"Red",content:`${userMention(member.id)} has lost ${roleMention(autorole.roleID)}`})
+                await log({
+                    title: "Autorole Lost",
+                    color: "Red",
+                    content: `${userMention(member.id)} has lost ${roleMention(autorole.roleID)}`
+                });
                 await member.roles.remove(autorole.roleID).catch(console.error);
             }
         } else {
             // check if user is eligible
             if (isEligible) {
-                await log({title:"Autorole Gained",color:"Green",content:`${userMention(member.id)} has gained ${roleMention(autorole.roleID)}`})
+                await log({
+                    title: "Autorole Gained",
+                    color: "Green",
+                    content: `${userMention(member.id)} has gained ${roleMention(autorole.roleID)}`
+                });
                 await member.roles.add(autorole.roleID).catch(console.error);
             }
         }

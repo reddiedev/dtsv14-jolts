@@ -4,19 +4,32 @@ import processAutoroles from "./processAutoroles";
 import log from "../utils/log";
 
 export default async function processRolesCheck(guild: Guild, prisma: PrismaClient) {
-    const players = await prisma.player.findMany({ where: { coins: { gt: 0 } } })
-    await log({title:"Roles Check Initiated",color:"Green",content:`Started running roles check for ${players.length} users ${time(new Date())}`})
-    const promises = []
+    const players = await prisma.player.findMany({ where: { coins: { gt: 0 } } });
+    await log({
+        title: "Roles Check Initiated",
+        color: "Green",
+        content: `Started running roles check for ${players.length} users ${time(new Date())}`
+    });
 
-    for (const player of players){
-        const member = await guild.members.fetch(player.discordID)
-        const promise = new Promise<void>(async(resolve)=>{
-            await processAutoroles(member,prisma);
-            resolve()
-        })
-        promises.push(promise)
+    try {
+        const promises = [];
+
+        for (const player of players) {
+            const member = await guild.members.fetch(player.discordID);
+            const promise = new Promise<void>(async (resolve) => {
+                await processAutoroles(member, prisma);
+                resolve();
+            });
+            promises.push(promise);
+        }
+        await Promise.allSettled(promises);
+        await log({
+            title: "Roles Check Finished",
+            color: "Blue",
+            content: `Finished running roles check for ${players.length} users ${time(new Date())}`
+        });
+    } catch (err) {
+        console.error(err);
+        await log({ title: "Roles Check Error", color: "Red", content: `${JSON.stringify(err)}` });
     }
-    await Promise.allSettled(promises)
-    await log({title:"Roles Check Finished",color:"Blue",content:`Finished running roles check for ${players.length} users ${time(new Date())}`})
-
 }

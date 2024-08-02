@@ -7,7 +7,6 @@ import {
 } from "discord.js";
 import { SlashCommand } from "../types";
 import log from "../utils/log";
-import processAutoroles from "../functions/processAutoroles";
 
 const command: SlashCommand = {
     command: new SlashCommandBuilder()
@@ -117,7 +116,6 @@ const command: SlashCommand = {
             color: subcommand == "add" ? "Green" : "Red",
             content
         });
-
     }
 };
 
