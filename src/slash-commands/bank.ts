@@ -9,7 +9,16 @@ const command: SlashCommand = {
         .setName("bank")
         .setDescription("manage the central bank | staff-only")
         .addSubcommand(
-            new SlashCommandSubcommandBuilder().setName(`burn_rate`).setDescription(`set weekly burn rate | staff-only`)
+            new SlashCommandSubcommandBuilder()
+                .setName(`burn_rate`)
+                .setDescription(`set weekly burn rate | staff-only`)
+                .addNumberOption((option) =>
+                    option
+                        .setName("burn_rate")
+                        .setDescription("burn rate (0.1 = 10% of current balance is burned)")
+                        .setRequired(true)
+                        .setMinValue(0)
+                )
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
